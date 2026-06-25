@@ -1,0 +1,41 @@
+Macro Regime-to-Portfolio Decision Framework
+Weekly Macro-to-Portfolio Memo
+
+As of: 2026-06-19
+
+1. Current Signal
+Risk Appetite: Risk-On, Score: 0
+Risk Appetite Trend: Stable
+Rates & Inflation Regime: Regime 2
+Real Yield Tightening: ON
+Confidence: High
+
+2. Portfolio Stance
+Equity: Neutral (45-55%)
+Duration: Neutral (25-35%)
+Cash: Overweight (25-35%)
+TIPS: Neutral (3-7%)
+
+3. Interpretation
+Risk Appetite is classified as Risk-On, based on a score of 0.
+The Rates & Inflation Regime is classified as Regime 2.
+Real Yield Tightening is ON, which may cap aggressive equity or duration overweight positions when active.
+
+The Portfolio Router translates the current macro regime into asset-allocation stance bands across equities, duration, cash, and TIPS.
+
+4. What Changed
+Portfolio Router notes: Equity Overweight capped to Neutral due to Real Yield Tightening. Final stance reflects Real Yield Tightening modifier.
+
+5. Next Trigger
+Risk Appetite trigger: If any stress flag turns ON and Risk Appetite score moves from 0 to 1, Risk Appetite shifts from Risk-On to Neutral.
+Rates & Inflation trigger: If T10YIE crosses P80 or 4W Change turns positive, Inflation Concern turns ON and Rates & Inflation shifts from Regime 2 to Regime 1.
+Real Yield trigger: If Real Yield Tightening remains ON, aggressive Equity Overweight and Duration Overweight positions are capped.
+
+6. Data Quality Summary
+All pre-export data quality checks passed.
+
+7. Key Risks and Limitations
+- Weekly percentile rules may lag fast market turning points.
+- Signals are rule-based weekly regime indicators, not return forecasts.
+- Stance bands are illustrative and not optimized target weights.
+- The framework should be interpreted as a disciplined decision aid, not a trading system.

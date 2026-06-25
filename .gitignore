@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Generated outputs and local archives
+outputs/
+
+# Local data and secrets
+config.local.yaml
+.env
+.env.*
+data/local/*
+!data/local/README.md
+
+# Excel temporary files
+~$*.xlsx
+~$*.xlsm
+
+# Editors and notebooks
+.vscode/
+.ipynb_checkpoints/
+
+# Development artifacts
+*.bak
+*.tmp
+*.zip
+*_backup.py
+*_before_*.py
+patch_*.py
+_smoke_output.xlsx
+
+.venv/
+__pycache__/
+.pytest_cache/
+.vscode/
+*.py[cod]

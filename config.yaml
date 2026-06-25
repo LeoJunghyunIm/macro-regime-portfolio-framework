@@ -1,0 +1,246 @@
+project:
+  name: "Macro Regime-to-Portfolio Decision Framework"
+  principle: "Python calculates. Excel explains. Memo decides."
+
+parameters:
+  rolling_window_weeks: 52
+  percentile_threshold: 0.80
+  week_ending: "FRI"
+
+as_of:
+  convention: "latest_common_weekly_friday"
+  description: "Use the latest common weekly date available after resampling all series to week-ending Friday."
+
+risk_appetite_trend:
+  rule: "memo_level_only"
+  priority:
+    - "If prior week is unavailable, return Stable with insufficient history note."
+    - "If Risk_Appetite_Score increased versus the prior week, return Deteriorating."
+    - "If Risk_Appetite_Score decreased versus the prior week, return Improving."
+    - "If Risk_Appetite_Score is unchanged but HY_Reason includes Momentum, return Deteriorating."
+    - "Otherwise, return Stable."
+
+calculation_definitions:
+  d4w: "Current weekly value minus the value four weekly observations ago, calculated after resampling to week-ending Friday."
+  rolling_p80: "52-week rolling 80th percentile based on weekly aligned data."
+
+fred_series:
+  risk_appetite:
+    hy_oas:
+      id: "BAMLH0A0HYM2"
+      name: "High Yield Option-Adjusted Spread"
+      role: "Credit stress"
+    nfci:
+      id: "NFCI"
+      name: "Chicago Fed National Financial Conditions Index"
+      role: "Financial conditions"
+    vix:
+      id: "VIXCLS"
+      name: "CBOE Volatility Index"
+      role: "Equity volatility stress"
+    claims:
+      id: "ICSA"
+      name: "Initial Claims"
+      role: "Labor-market stress"
+
+  rates_inflation:
+    dgs10:
+      id: "DGS10"
+      name: "10-Year Treasury Yield"
+      role: "Rate pressure"
+    t10yie:
+      id: "T10YIE"
+      name: "10-Year Breakeven Inflation Rate"
+      role: "Inflation concern"
+    dfii10:
+      id: "DFII10"
+      name: "10-Year Real Yield"
+      role: "Real-yield tightening modifier"
+    dgs2:
+      id: "DGS2"
+      name: "2-Year Treasury Yield"
+      role: "Curve context"
+
+risk_appetite_rules:
+  credit:
+    indicator: "hy_oas"
+    rule: "Flag if value > rolling P80 OR d4w > 0"
+    reason_codes:
+      level: "value > rolling P80"
+      momentum: "d4w > 0"
+      both: "value > rolling P80 and d4w > 0"
+      none: "no credit stress"
+    note: "Level stress and momentum deterioration have different meanings, but both trigger the credit flag because their portfolio implication is similar."
+
+  nfci:
+    indicator: "nfci"
+    rule: "Flag if value > rolling P80"
+    note: "Level-only; no momentum flag."
+
+  vix:
+    indicator: "vix"
+    rule: "Flag if value > rolling P80"
+    note: "Low volatility is context only and does not create a risk-on score."
+
+  claims:
+    indicator: "claims"
+    rule: "Flag if value > rolling P80"
+    note: "Level-only because weekly claims data is noisy."
+
+  scoring:
+    score_formula: "Credit_Flag + NFCI_Flag + VIX_Flag + Claims_Flag"
+    regimes:
+      risk_on: "Score = 0"
+      neutral: "Score = 1-2"
+      risk_off: "Score = 3-4"
+    note: "No negative scores and no fractional weights."
+
+rates_inflation_rules:
+  rate_pressure:
+    indicator: "dgs10"
+    rule: "ON if value > rolling P80 OR d4w > 0"
+    reason_codes:
+      level: "value > rolling P80"
+      momentum: "d4w > 0"
+      both: "value > rolling P80 and d4w > 0"
+      none: "no rate pressure"
+
+  inflation_concern:
+    indicator: "t10yie"
+    rule: "ON if value > rolling P80 OR d4w > 0"
+    reason_codes:
+      level: "value > rolling P80"
+      momentum: "d4w > 0"
+      both: "value > rolling P80 and d4w > 0"
+      none: "no inflation concern"
+
+  real_yield_tightening:
+    indicator: "dfii10"
+    rule: "ON if value > rolling P80 OR d4w > 0"
+    note: "Portfolio Router modifier only, not a third regime axis."
+
+  curve_context:
+    indicator: "dgs2"
+    note: "May support curve diagnostics, but it is not a core regime axis."
+
+  regimes:
+    regime_1: "Rate Pressure ON + Inflation Concern ON"
+    regime_2: "Rate Pressure ON + Inflation Concern OFF"
+    regime_3: "Rate Pressure OFF + Inflation Concern ON"
+    regime_4: "Rate Pressure OFF + Inflation Concern OFF"
+
+regime_key_maps:
+  risk_appetite:
+    Risk-On: "risk_on"
+    Neutral: "neutral"
+    Risk-Off: "risk_off"
+
+  rates_inflation:
+    Regime 1: "regime_1"
+    Regime 2: "regime_2"
+    Regime 3: "regime_3"
+    Regime 4: "regime_4"
+
+portfolio_router:
+  allowed_stances:
+    - "Overweight"
+    - "Neutral"
+    - "Underweight"
+
+  neutral_reference:
+    equity: 0.50
+    duration: 0.30
+    cash: 0.15
+    tips: 0.05
+
+  stance_bands:
+    equity:
+      underweight: [0.25, 0.40]
+      neutral: [0.45, 0.55]
+      overweight: [0.60, 0.70]
+    duration:
+      underweight: [0.10, 0.20]
+      neutral: [0.25, 0.35]
+      overweight: [0.40, 0.50]
+    cash:
+      underweight: [0.05, 0.10]
+      neutral: [0.10, 0.20]
+      overweight: [0.25, 0.35]
+    tips:
+      underweight: [0.00, 0.03]
+      neutral: [0.03, 0.07]
+      overweight: [0.08, 0.15]
+
+  base_matrix:
+    risk_on:
+      regime_1: {equity: "Neutral", duration: "Underweight", cash: "Overweight", tips: "Overweight"}
+      regime_2: {equity: "Overweight", duration: "Neutral", cash: "Overweight", tips: "Neutral"}
+      regime_3: {equity: "Overweight", duration: "Neutral", cash: "Neutral", tips: "Overweight"}
+      regime_4: {equity: "Overweight", duration: "Overweight", cash: "Underweight", tips: "Neutral"}
+
+    neutral:
+      regime_1: {equity: "Underweight", duration: "Underweight", cash: "Overweight", tips: "Overweight"}
+      regime_2: {equity: "Neutral", duration: "Neutral", cash: "Overweight", tips: "Neutral"}
+      regime_3: {equity: "Neutral", duration: "Neutral", cash: "Neutral", tips: "Overweight"}
+      regime_4: {equity: "Neutral", duration: "Overweight", cash: "Neutral", tips: "Neutral"}
+
+    risk_off:
+      regime_1: {equity: "Underweight", duration: "Underweight", cash: "Overweight", tips: "Overweight"}
+      regime_2: {equity: "Underweight", duration: "Neutral", cash: "Overweight", tips: "Neutral"}
+      regime_3: {equity: "Underweight", duration: "Neutral", cash: "Overweight", tips: "Overweight"}
+      regime_4: {equity: "Underweight", duration: "Overweight", cash: "Overweight", tips: "Neutral"}
+
+  real_yield_modifier:
+    equity_overweight: "cap to Neutral"
+    duration_overweight: "cap to Neutral"
+    note: "Real-yield tightening is a cap or constraint, not a bullish signal."
+
+staleness:
+  max_stale_days:
+    daily_market_series: 7
+    weekly_macro_series: 14
+
+  series_frequency_groups:
+    daily_market_series:
+      - "hy_oas"
+      - "vix"
+      - "dgs10"
+      - "t10yie"
+      - "dfii10"
+      - "dgs2"
+    weekly_macro_series:
+      - "nfci"
+      - "claims"
+
+data_quality:
+  pre_export_checks:
+    - "missing_latest_value"
+    - "series_freshness"
+    - "rolling_window_sufficiency"
+    - "as_of_date_alignment"
+    - "portfolio_output_available"
+
+  post_export_checks:
+    - "export_success"
+
+  confidence:
+    high: "Data complete, no major data-quality issue."
+    medium: "Minor stale or near-threshold issue."
+    low: "Serious missing or stale issue."
+
+outputs:
+  directory: "outputs"
+  excel_file: "outputs/Macro_Regime_Framework_Output.xlsx"
+  memo_file: "outputs/weekly_memo.txt"
+  pdf_file: "outputs/Macro_Regime_Framework_Memo.pdf"
+
+data:
+  directory: "data"
+
+local_data:
+  use_local_hy_oas_history: false
+  hy_oas_history_file: "data/local/Risk_Appetite.xlsx"
+  hy_oas_history_sheet: "RAW_HY"
+  hy_oas_date_column: "Date"
+  hy_oas_value_column: "Value"
+  hy_oas_anchor: "previous_friday"
