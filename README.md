@@ -1,4 +1,4 @@
-# Macro Regime-to-Portfolio Decision Framework
+﻿# Macro Regime-to-Portfolio Decision Framework
 
 ## 1. Project Overview
 
@@ -224,10 +224,10 @@ Running the framework creates:
 
 ```text
 outputs/
-├─ Macro_Regime_Framework_Output.xlsx
-├─ Macro_Regime_Framework_Memo.pdf
-├─ weekly_memo.txt
-└─ archive/YYYY-MM-DD/
+?쒋? Macro_Regime_Framework_Output.xlsx
+?쒋? Macro_Regime_Framework_Memo.pdf
+?쒋? weekly_memo.txt
+?붴? archive/YYYY-MM-DD/
 ```
 
 The production workbook contains:
@@ -269,6 +269,19 @@ Full production workbooks and complete underlying raw-data histories are exclude
 
 ---
 
+### Memo Preview
+
+#### Page 1
+
+![Macro Regime Framework Memo Page 1](./images/memo_page_1.png)
+
+#### Page 2
+
+![Macro Regime Framework Memo Page 2](./images/memo_page_2.png)
+
+[Open the full PDF memo](./sample_output/Macro_Regime_Framework_Memo_Sample.pdf)
+
+---
 ## 7. Historical Diagnostics
 
 Two diagnostics assess framework behavior.
@@ -394,3 +407,4 @@ Detailed rules, design rationale, and implementation choices are documented in:
 ## 12. Author
 
 Junghyun (Leo) Im
+
