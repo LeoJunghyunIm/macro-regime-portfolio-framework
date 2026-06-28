@@ -107,9 +107,9 @@ for each asset class:
 - Neutral
 - Underweight
 
-Illustrative bands translate those qualitative stances into communication
-ranges. They are not optimized weights and should not be treated as precise
-portfolio recommendations.
+The Portfolio Router produces qualitative directional stances across equity,
+nominal Treasury duration, cash, and TIPS or inflation protection. These
+stances are not optimized portfolio weights or allocation bands.
 
 ## Data quality
 
@@ -122,21 +122,22 @@ Pre-export checks cover:
 - availability of Portfolio Router outputs
 - validity of the latest regime signals
 
-Confidence is High when all checks pass, Medium when warnings exist without a
-failure, and Low when any required check fails.
+Data Confidence is High when all checks pass, Medium when warnings exist
+without a failure, and Low when any required check fails. Data Confidence
+measures output reliability, not investment conviction.
 
 ## Historical diagnostics
 
-### Stress Event Audit
+### Historical Regime Recognition
 
-Selected historical windows are used to test whether the framework produced
-an appropriate warning during known stress environments. The diagnostic
-reports detection status, response lag, peak risk score, and peak Rates &
-Inflation regime.
+Selected historical windows are used to evaluate whether the framework
+recognized relevant stress conditions during known historical episodes. The
+diagnostic reports recognition status, recognition timing, peak Risk Appetite
+Score, and peak Rates & Inflation regime.
 
-A zero-week lag can include stress that was already active at the beginning of
-the selected event window. The audit evaluates signal recognition, not
-portfolio performance.
+Recognition timing of zero may reflect stress that was already active at the
+beginning of the selected event window. Recognition does not imply prediction,
+and the diagnostic does not evaluate portfolio returns.
 
 ### Regime Co-occurrence
 
@@ -147,7 +148,22 @@ scores can have different portfolio implications.
 
 ## Interpretation boundaries
 
-The framework is a decision aid. It does not estimate expected returns,
-optimize a portfolio, or claim causal identification. Thresholds are
-transparent and intentionally compact, but rolling rules may lag abrupt
-turning points and historical diagnostic windows involve judgment.
+The framework is primarily a coincident regime monitor and portfolio
+decision-support tool. It does not estimate expected returns, optimize a
+portfolio, predict the timing of market shocks or specific turning points, or
+claim causal identification.
+
+At each weekly date, signal calculations use no observations carrying dates
+after that date. Rolling windows are trailing and uncentered. This
+computational treatment does not constitute a complete real-time or
+point-in-time data reconstruction.
+
+Historical diagnostics use currently available FRED histories rather than a
+complete real-time-vintage database. Publication lags and subsequent data
+revisions may therefore affect historical classifications.
+
+The framework is not a complete business-cycle classifier. Its scope is risk
+appetite, financial conditions, rates, inflation compensation, real yields,
+and their portfolio implications. Thresholds are transparent and intentionally
+compact, but rolling rules may lag abrupt turning points and selected
+historical diagnostic windows involve judgment.

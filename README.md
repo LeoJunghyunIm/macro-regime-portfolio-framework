@@ -1,4 +1,4 @@
-﻿# Macro Regime-to-Portfolio Decision Framework
+# Macro Regime-to-Portfolio Decision Framework
 
 ## 1. Project Overview
 
@@ -8,16 +8,16 @@ The framework is designed around the principle:
 
 > Python calculates. Excel explains. Memo decides.
 
-The goal is not to build a trading system, optimize backtested returns, or select individual securities. Instead, the project creates a disciplined and repeatable decision framework for interpreting macro regimes and translating them into portfolio stance decisions across:
+The goal is not to build a trading system, optimize backtested returns, or select individual securities. Instead, the project creates a disciplined and repeatable process for interpreting macro regimes and translating them into portfolio stance decisions across:
 
 * Equities
-* High-quality government duration
-* Cash
-* TIPS and inflation hedges
+* Nominal U.S. Treasury duration
+* Cash and Treasury bills
+* TIPS and inflation-protection assets
 
 The duration allocation primarily represents U.S. Treasury exposure rather than corporate credit, which combines interest-rate risk with credit-spread risk.
 
-This project reflects a macro and multi-asset research process focused on risk appetite, rates, inflation, real yields, and their implications for portfolio positioning.
+This project reflects a macro and multi-asset research process focused on risk appetite, financial conditions, rates, inflation compensation, real yields, and their implications for portfolio positioning.
 
 ---
 
@@ -59,7 +59,7 @@ The engine also produces:
 * Direction of travel
 * Rule-derived next triggers
 
-Credit stress is activated by either an elevated High Yield spread level or four-week spread widening. The other three channels use level-based rules.
+The HY OAS signal is activated by either an elevated High Yield spread level or four-week spread widening. The other three channels use level-based rules.
 
 ---
 
@@ -71,6 +71,8 @@ The Rates & Inflation Engine evaluates the nominal-rate and inflation backdrop u
 * 10-Year Breakeven Inflation Rate
 * 10-Year Real Yield
 
+The 10-year breakeven rate is interpreted as market-implied inflation compensation rather than a pure measure of expected inflation.
+
 The core Rates & Inflation classification is a two-by-two regime structure:
 
 | Regime   | Rate Pressure | Inflation Concern | Interpretation                      |
@@ -80,7 +82,7 @@ The core Rates & Inflation classification is a two-by-two regime structure:
 | Regime 3 |           OFF |                ON | Inflation concern only              |
 | Regime 4 |           OFF |               OFF | No major rate or inflation pressure |
 
-The 10-Year Real Yield is not treated as a third regime axis. Instead, Real Yield Tightening acts as a portfolio constraint because rising real yields can limit aggressive equity or duration overweight positions.
+The 10-Year Real Yield is not treated as a third regime axis. Instead, Real Yield Tightening acts as a portfolio constraint because elevated or rising real yields can limit aggressive equity or duration overweight positions.
 
 The 2-Year Treasury Yield is retained for yield-curve context only. It does not currently determine regime classification or portfolio stances.
 
@@ -93,17 +95,16 @@ The Portfolio Router combines the Risk Appetite classification and the Rates & I
 Outputs include:
 
 * Equity stance
-* Duration stance
+* Nominal Treasury duration stance
 * Cash stance
-* TIPS stance
-* Illustrative stance bands
+* TIPS and inflation-protection stance
 * Real Yield Tightening adjustments
 * Portfolio interpretation notes
 * Rule-derived next triggers
 
 If Real Yield Tightening is ON, aggressive Equity Overweight or Duration Overweight positions may be capped at Neutral.
 
-The Portfolio Router is not an optimizer. It is a transparent, rule-based mapping from macro regime combinations to portfolio stance bands.
+The Portfolio Router is not an optimizer. It is a transparent, rule-based mapping from macro regime combinations to qualitative directional portfolio stances. These stances are not optimized portfolio weights or allocation bands.
 
 ---
 
@@ -115,7 +116,7 @@ Core decision series include:
 
 | Internal Name | FRED Series    | Description                                     | Framework Role       |
 | ------------- | -------------- | ----------------------------------------------- | -------------------- |
-| `hy_oas`      | `BAMLH0A0HYM2` | High Yield Option-Adjusted Spread               | Credit stress        |
+| `hy_oas`      | `BAMLH0A0HYM2` | High Yield Option-Adjusted Spread               | Credit conditions    |
 | `nfci`        | `NFCI`         | Chicago Fed National Financial Conditions Index | Financial conditions |
 | `vix`         | `VIXCLS`       | CBOE Volatility Index                           | Volatility stress    |
 | `claims`      | `ICSA`         | Initial Claims                                  | Labor-market stress  |
@@ -160,7 +161,7 @@ Signals are generated from explicit rules, including:
 * Level and momentum reason codes
 * Explicit regime classification
 * Data-validity checks
-* Data-quality confidence
+* Data-confidence assessment
 
 This makes the framework easier to interpret and audit in an investment-research setting.
 
@@ -174,7 +175,7 @@ The framework uses the latest completed Friday as the official as-of date. This 
 
 ---
 
-### Insufficient Data protection
+### Insufficient-data protection
 
 Missing historical information is not classified as Risk-On.
 
@@ -183,11 +184,11 @@ When required inputs are unavailable, the relevant output is marked as:
 * Insufficient Data
 * INVALID
 
-This prevents misleading historical classifications and avoids producing false confidence when the underlying data is incomplete.
+This prevents misleading historical classifications and avoids producing false confidence when the underlying data are incomplete.
 
 ---
 
-## 5. Data Quality and Confidence
+## 5. Data Quality and Data Confidence
 
 Data Quality checks assess whether the weekly output is operationally reliable.
 
@@ -206,15 +207,15 @@ Post-export checks include:
 * Weekly memo created successfully
 * PDF output created successfully when applicable
 
-Confidence levels:
+Data confidence levels:
 
-| Confidence | Meaning                                                 |
-| ---------- | ------------------------------------------------------- |
-| High       | Data are complete and all major checks pass             |
-| Medium     | A minor warning exists, but no major failure is present |
-| Low        | A serious data or output issue exists                   |
+| Data Confidence | Meaning                                                 |
+| --------------- | ------------------------------------------------------- |
+| High            | Data are complete and all major checks pass             |
+| Medium          | A minor warning exists, but no major failure is present |
+| Low             | A serious data or output issue exists                   |
 
-Confidence measures output reliability, not investment conviction.
+Data confidence measures output reliability, not investment conviction.
 
 ---
 
@@ -224,10 +225,10 @@ Running the framework creates:
 
 ```text
 outputs/
-  Macro_Regime_Framework_Output.xlsx
-  Macro_Regime_Framework_Memo.pdf
-  weekly_memo.txt
-  archive/YYYY-MM-DD/
+├─ Macro_Regime_Framework_Output.xlsx
+├─ Macro_Regime_Framework_Memo.pdf
+├─ weekly_memo.txt
+└─ archive/YYYY-MM-DD/
 ```
 
 The production workbook contains:
@@ -237,12 +238,12 @@ The production workbook contains:
 * Portfolio Router detail
 * Risk Appetite detail
 * Rates & Inflation detail
-* Stress Event Audit
+* `Stress Event Audit` worksheet
 * Regime Co-occurrence
 * Data Quality
 * Supporting calculation and source-data sheets
 
-The PDF provides a concise two-page macro-to-portfolio memo designed for rapid review.
+The PDF provides a concise two-page macro-to-portfolio memo designed for rapid review. Its second page summarizes driver evidence, rule maps, historical signal charts, and Historical Regime Recognition.
 
 The text memo provides a lightweight summary of:
 
@@ -255,7 +256,7 @@ The text memo provides a lightweight summary of:
 
 ---
 
-### Public sample outputs
+### Public Sample Outputs
 
 The repository includes public sample artifacts:
 
@@ -273,30 +274,33 @@ Full production workbooks and complete underlying raw-data histories are exclude
 
 #### Page 1
 
-![Macro Regime Framework Memo Page 1](./images/memo_page_1.png)
+[![Macro Regime Framework Memo — Page 1](images/memo_page_1.png)](sample_output/Macro_Regime_Framework_Memo_Sample.pdf)
 
 #### Page 2
 
-![Macro Regime Framework Memo Page 2](./images/memo_page_2.png)
+[![Macro Regime Framework Memo — Page 2](images/memo_page_2.png)](sample_output/Macro_Regime_Framework_Memo_Sample.pdf)
 
-[Open the full PDF memo](./sample_output/Macro_Regime_Framework_Memo_Sample.pdf)
+Click either page to open the full PDF memo.
 
 ---
+
 ## 7. Historical Diagnostics
 
 Two diagnostics assess framework behavior.
 
-### Stress Event Audit
+### Historical Regime Recognition
 
-The Stress Event Audit evaluates whether selected historical stress episodes were recognized by the framework.
+Historical Regime Recognition evaluates whether the framework recognized relevant stress conditions during selected historical episodes. The PDF uses this title, while the detailed workbook results remain in the `Stress Event Audit` worksheet.
 
-It records:
+The diagnostic records:
 
-* Whether the event was detected
-* Detection lag
+* Whether the relevant stress regime was recognized
+* Recognition timing relative to the event window
 * Peak Risk Appetite Score
 * Peak Rates & Inflation regime
 * Relevant signal behavior
+
+Recognition timing of zero may reflect stress that was already active at the beginning of the selected event window. Recognition does not imply prediction.
 
 ### Regime Co-occurrence
 
@@ -304,7 +308,7 @@ The Regime Co-occurrence matrix shows how frequently Risk Appetite classificatio
 
 This provides a structural view of how the two engines interact across the historical sample.
 
-These diagnostics evaluate framework behavior. They are not portfolio-return backtests.
+These diagnostics evaluate framework behavior. They are not portfolio-return backtests and do not establish predictive performance.
 
 The complete diagnostic tables can be reviewed in the public sample workbook:
 
@@ -382,17 +386,25 @@ GitHub Actions automatically runs the tests and release validation after reposit
 
 ---
 
-## 10. Limitations
+## 10. Limitations and Interpretation Boundaries
 
 * The framework does not forecast asset returns.
 * It is not a trading system or portfolio optimizer.
-* Stance bands are illustrative rather than optimized target weights.
-* Rolling percentile rules may react with a lag around abrupt turning points.
+* Portfolio outputs are qualitative directional stances rather than optimized portfolio weights or allocation bands.
+* Rolling-percentile rules may react with a lag around abrupt turning points.
 * Selected historical stress events are diagnostic choices rather than an exhaustive event set.
-* High-quality government duration is represented primarily through Treasury exposure.
+* Nominal government duration is represented primarily through U.S. Treasury exposure.
 * The 2-Year Treasury Yield is contextual and does not currently affect portfolio decisions.
 * PDF export requires Windows and a locally installed copy of Microsoft Excel.
 * FRED and other data providers retain their respective data rights.
+
+The framework is primarily a coincident regime monitor and portfolio decision-support tool. It is not designed to predict the timing of market shocks or specific turning points.
+
+At each weekly date, signal calculations use no observations carrying dates after that date. Rolling windows are trailing and uncentered. This computational treatment does not constitute a complete real-time or point-in-time data reconstruction.
+
+Historical diagnostics use currently available FRED histories rather than a complete real-time-vintage database. Publication lags and subsequent data revisions may therefore affect historical classifications.
+
+The framework is not a complete business-cycle classifier. Its scope is risk appetite, financial conditions, rates, inflation compensation, real yields, and their portfolio implications.
 
 ---
 
@@ -407,4 +419,3 @@ Detailed rules, design rationale, and implementation choices are documented in:
 ## 12. Author
 
 Junghyun (Leo) Im
-
