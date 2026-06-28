@@ -8,7 +8,7 @@ Risk Appetite: Neutral, Score: 1
 Risk Appetite Trend: Deteriorating
 Rates & Inflation Regime: Regime 2
 Real Yield Tightening: ON
-Confidence: High
+Data Confidence: High
 
 2. Portfolio Stance
 Equity: Neutral (45-55%)
