@@ -224,10 +224,10 @@ Running the framework creates:
 
 ```text
 outputs/
-?쒋? Macro_Regime_Framework_Output.xlsx
-?쒋? Macro_Regime_Framework_Memo.pdf
-?쒋? weekly_memo.txt
-?붴? archive/YYYY-MM-DD/
+  Macro_Regime_Framework_Output.xlsx
+  Macro_Regime_Framework_Memo.pdf
+  weekly_memo.txt
+  archive/YYYY-MM-DD/
 ```
 
 The production workbook contains:
