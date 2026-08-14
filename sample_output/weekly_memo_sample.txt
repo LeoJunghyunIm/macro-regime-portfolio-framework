@@ -1,7 +1,7 @@
 Macro Regime-to-Portfolio Decision Framework
 Weekly Macro-to-Portfolio Memo
 
-As of: 2026-07-31
+As of: 2026-08-07
 
 1. Current Signal
 Risk Appetite: Neutral, Score: 1
