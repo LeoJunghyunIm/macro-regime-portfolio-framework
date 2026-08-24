@@ -1,11 +1,11 @@
 Macro Regime-to-Portfolio Decision Framework
 Weekly Macro-to-Portfolio Memo
 
-As of: 2026-08-14
+As of: 2026-08-21
 
 1. Current Signal
 Risk Appetite: Risk-On, Score: 0
-Risk Appetite Trend: Improving
+Risk Appetite Trend: Stable
 Rates & Inflation Regime: Regime 1
 Real Yield Tightening: ON
 Data Confidence: High
